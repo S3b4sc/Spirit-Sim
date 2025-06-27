@@ -1,0 +1,9 @@
+# Cache files 
+__pycache__
+
+# Log files from spirit runs
+Log*
+
+# Output files
+output/
+
