@@ -8,6 +8,7 @@ def menu():
     
     1   Run simulation
     2   Extract and plot data from simulation
+    3   Compute topological charge and visualize spin vectors
     '''
     
     try:
