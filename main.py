@@ -30,8 +30,8 @@ if __name__ == "__main__":
             
     elif usr_choice == 2:
         # Load simulation final state
-        spins = load_ovf_ascii("output/2025-07-14_18-18-28_Image-00_Spins-final.ovf")
-        positions = load_ovf_ascii("output/2025-07-14_18-18-28_positions_final.txt")
+        spins = load_ovf_ascii("positions.txt")
+        positions = load_ovf_ascii("spins.txt")
         
         print(f"Spins shape: {spins.shape}")
         print(f"Positions shape: {positions.shape}")
@@ -44,10 +44,10 @@ if __name__ == "__main__":
         
     elif usr_choice == 3:
         # Load simulation final state
-        spins = load_ovf_ascii("output/2025-07-14_18-18-28_Image-00_Spins-final.ovf")
-        positions = load_ovf_ascii("output/2025-07-14_18-18-28_positions_final.txt")
-        
-        compute_neighbor_array(positions, cutoff=1.0)
+        #spins = load_ovf_ascii("output/2025-07-14_18-18-28_Image-00_Spins-final.ovf")
+        #positions = load_ovf_ascii("output/2025-07-14_18-18-28_positions_final.txt")
+        #
+        #compute_neighbor_array(positions, cutoff=1.0)
         
         #compute_topological_charge_profile(positions, spins, plot=True)
         
@@ -57,6 +57,32 @@ if __name__ == "__main__":
         #TDP = TemperatureDependentParameters(spins, positions, lattice_shape=(10, 10, 10))  
         #
         #TDP.calculate_temperature_dependent_parameters()
+
+        N = 21
+        positions = []
+        spins = []
+
+        for i in range(N):
+            for j in range(N):
+                x = i
+                y = j
+                z = 0
+                dx = i - N//2
+                dy = j - N//2
+                r = np.sqrt(dx**2 + dy**2)
+                phi = np.arctan2(dy, dx)
+                # Skyrmion profile: center down, edge up
+                theta = np.pi * r / (N//2)
+                Sx = np.sin(theta) * np.cos(phi)
+                Sy = np.sin(theta) * np.sin(phi)
+                Sz = np.cos(theta)
+                positions.append(f"{x} {y} {z}")
+                spins.append(f"{Sx} {Sy} {Sz}")
+
+        with open("positions.txt", "w") as f:
+            f.write("\n".join(positions))
+        with open("spins.txt", "w") as f:
+            f.write("\n".join(spins))
         
     elif usr_choice == 4:
         
@@ -65,7 +91,8 @@ if __name__ == "__main__":
         lib.compute_layered_topo_charge.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
         lib.compute_layered_topo_charge.restype = None
 
-        pos_file = b"./output/2025-07-14_21-08-32_positions_final.txt"
-        spin_file = b"./output/2025-07-14_21-08-32_Image-00_Spins-final.ovf"
+        pos_file = b"./positions.txt"
+        spin_file = b"./spins.txt"
 
         lib.compute_layered_topo_charge(pos_file, spin_file)
+        
